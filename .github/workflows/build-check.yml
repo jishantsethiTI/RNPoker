@@ -15,6 +15,7 @@ jobs:
   typescript:
     name: TypeScript
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
@@ -35,6 +36,7 @@ jobs:
   bundle:
     name: JS Bundle
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
@@ -57,6 +59,7 @@ jobs:
   android:
     name: Android Build
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
@@ -71,6 +74,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: gradle
+          cache-dependency-path: |
+            **/gradle-wrapper.properties
+            **/build.gradle*
+            **/settings.gradle*
 
       - name: Install dependencies
         run: npm ci
