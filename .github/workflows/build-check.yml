@@ -1,0 +1,77 @@
+name: Build Checks
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  # ── 1. TypeScript compile check ───────────────────────────────────────────
+  typescript:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript compile check
+        run: npx tsc --noEmit
+
+  # ── 2. JS bundle check (Metro / Expo) ─────────────────────────────────────
+  bundle:
+    name: JS Bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export bundle (catches Metro / JS compile errors)
+        run: npx expo export --platform android --no-minify
+        env:
+          EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK: 1
+
+  # ── 3. Android Gradle build check ─────────────────────────────────────────
+  android:
+    name: Android Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate native Android project
+        run: npx expo prebuild --platform android --no-install
+        env:
+          EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK: 1
+
+      - name: Gradle build check (assembleDebug)
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+        env:
+          JAVA_OPTS: -Xmx4g
