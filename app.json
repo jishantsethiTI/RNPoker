@@ -1,11 +1,11 @@
 {
   "expo": {
     "name": "RNPoke",
-    "slug": "rnpoker",
+    "slug": "rnpoke",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "rnpoker",
+    "scheme": "rnpoke",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
